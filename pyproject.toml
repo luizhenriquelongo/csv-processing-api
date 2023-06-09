@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "CSV Processing API"
+version = "0.1.0"
+description = ""
+authors = ["Luiz Longo <longo.luizh@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.3.2"
+
+
+[tool.poetry.group.dev.dependencies]
+black = {extras = ["d"], version = "^23.3.0"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = [
+  '.git',
+  '.tox',
+  '.env',
+  '.github',
+]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports ='true'
+strict_optional = 'false'
+follow_imports = 'silent'
+
+[tool.isort]
+py_version=311
+known_local_folder = ["app", "tasks"]
+profile = "black"
+
+[tool.bandit]
+exclude_dirs = ["^.*\\/tests_.*"]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]
