@@ -2,7 +2,7 @@ from typing import Dict, List
 
 from pydantic import BaseModel, Field
 
-from dtos import TaskStatus
+from dtos.tasks import PublicTaskInfo
 
 
 class ErrorResponse(BaseModel):
@@ -19,6 +19,5 @@ class BaseWorkflowResponse(BaseModel):
     )
 
 
-class TaskCreatedResponse(BaseWorkflowResponse):
-    task_id: str
-    status: TaskStatus
+class TaskAPIResponse(BaseWorkflowResponse):
+    task: PublicTaskInfo

@@ -19,3 +19,14 @@ class Task(BaseModel):
     input_file_path: str | None
     output_file_path: str | None
     errors: ErrorsDict | None
+
+
+class PublicTaskInfo(BaseModel):
+    id: str
+    status: TaskStatus
+    errors: ErrorsDict | None
+
+    @classmethod
+    def from_task(cls, task: Task):
+        visible_fields = ("id", "status", "errors")
+        return cls(**{field: getattr(task, field) for field in visible_fields})

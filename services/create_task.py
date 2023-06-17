@@ -8,6 +8,8 @@ from werkzeug.datastructures import FileStorage
 
 from background_tasks import process_csv
 from dtos import Task, responses
+from dtos.tasks import PublicTaskInfo
+from services import mixins
 
 from app.api import exceptions
 
@@ -17,7 +19,7 @@ class CreateTaskDAO(Protocol):
         ...
 
 
-class CreateTaskService:
+class CreateTaskService(mixins.BuildNextMixin):
     ALLOWED_EXTENSIONS: Tuple[Literal["csv"]] = ("csv",)
 
     def __init__(self, request: Request, dao: CreateTaskDAO, *, upload_folder: Path, download_folder: Path):
@@ -37,8 +39,8 @@ class CreateTaskService:
         task = self.dao.create_new_task(task_id=task_id, input_file_path=str(input_file_path))
 
         process_csv.delay(task.id)
-        response = responses.TaskCreatedResponse(
-            task_id=task.id, status=task.status, next=f"/api/v1/tasks/{task.id}/status"
+        response = responses.TaskAPIResponse(
+            task=PublicTaskInfo.from_task(task), next=f"/api/v1/file-processing/tasks/{task.id}/status"
         )
 
         return response.dict(exclude_none=True), HTTPStatus.ACCEPTED
