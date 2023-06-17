@@ -1,2 +1,3 @@
 from .check_task_status import CheckTaskStatusService
 from .create_task import CreateTaskService
+from .download_task_result import DownloadTaskResultService

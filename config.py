@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_sqlite_dabase_uri(base_dir: Path, db_name: str):
-    return f"sqlite:///{base_dir / db_name}.db"
-
-
 class Config:
     """
     Base configuration class. Contains default configuration settings + configuration settings applicable
@@ -32,6 +28,14 @@ class Config:
         "broker_url": os.getenv("CELERY_BROKER_URL"),
         "result_backend": os.getenv("RESULT_BACKEND"),
         "task_ignore_result": True,
+        # Scheduling a task to clean up files related to a task that has completed their workflow.
+        "beat_schedule": {
+            "cleanup-files-every-90-seconds": {
+                "task": "background_tasks.tasks.cleanup_files",
+                "schedule": 90.0,
+                "options": {"expires": 15.0},
+            }
+        },
     }
 
     MONGO_URI = os.getenv("MONGO_URI")
@@ -39,14 +43,11 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri(Config.BASE_DIR, "dev")
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri(Config.BASE_DIR, "test")
 
 
 class ProductionConfig(Config):
     FLASK_ENV = "production"
-    SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI", get_sqlite_dabase_uri(Config.BASE_DIR, "prod"))

@@ -3,8 +3,8 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - 5672:5672  # RabbitMQ port
-      - 15672:15672  # RabbitMQ management port
+      - "5672:5672"  # RabbitMQ port
+      - "15672:15672"  # RabbitMQ management port
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq  # Persist RabbitMQ data
 
@@ -15,11 +15,17 @@ services:
       FLASK_APP: application
     volumes:
       - .:/app
-    command: poetry run gunicorn -w 4 -b 0.0.0.0:5002 application:app --log-level DEBUG
+    command: poetry run gunicorn -w 4 -b 0.0.0.0:5002 application:app --log-level DEBUG --timeout 360
     ports:
       - "5002:5002"
+    depends_on:
+      - mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
 
-  celery:
+  celery_worker:
     build:
       context: .
     environment:
@@ -29,6 +35,22 @@ services:
     command: poetry run celery -A make_celery worker --loglevel INFO
     depends_on:
       - rabbitmq
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  celery_beat:
+    build:
+      context: .
+    environment:
+      FLASK_APP: application
+    volumes:
+      - .:/app
+    command: poetry run celery -A make_celery beat --loglevel INFO
+    depends_on:
+      - rabbitmq
+      - celery_worker
 
   mongodb:
     image: mongo:latest

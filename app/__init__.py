@@ -29,5 +29,7 @@ def create_app(config: Type["Config"] | str) -> Flask:
     app.config.from_prefixed_env()
     celery_init_app(app)
 
+    app.register_error_handler(400, middlewares.handle_404)
+    app.register_error_handler(Exception, middlewares.handle_bare_excpetions)
     app.register_error_handler(BaseAPIException, middlewares.handle_api_exceptions)
     return app

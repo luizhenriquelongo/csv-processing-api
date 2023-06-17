@@ -20,6 +20,10 @@ class Task(BaseModel):
     output_file_path: str | None
     errors: ErrorsDict | None
 
+    def mark_as_finished(self):
+        self.input_file_path = None
+        self.output_file_path = None
+
 
 class PublicTaskInfo(BaseModel):
     id: str

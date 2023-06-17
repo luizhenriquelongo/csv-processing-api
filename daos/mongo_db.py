@@ -1,3 +1,5 @@
+from typing import List
+
 from flask_pymongo.wrappers import Collection, Database
 
 from dtos import Task
@@ -26,3 +28,16 @@ class TasksMongoDAO(MongoDAO):
         task = Task(id=task_id, input_file_path=input_file_path)
         self.collection.insert_one(task.dict())
         return task
+
+    def get_tasks_with_their_workflow_done(self) -> List[Task]:
+        query = {
+            "$and": [
+                {"$or": [{"status": "DOWNLOADED"}, {"status": "FAILED"}]},
+                {"input_file_path": {"$ne": None}},
+                {"output_file_path": {"$ne": None}},
+            ]
+        }
+
+        # Fetch the tasks
+        tasks = self.collection.find(query)
+        return [Task(**task) for task in tasks]

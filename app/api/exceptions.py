@@ -11,7 +11,7 @@ class BaseAPIException(Exception):
     message: str
     response: ErrorResponse
 
-    def __init__(self, details: List[Dict | BaseModel]):
+    def __init__(self, details: List[Dict | BaseModel | str]):
         assert hasattr(
             self, "http_status"
         ), f"All classes inheriting from {BaseAPIException.__name__} must declare 'http_status'."
@@ -37,3 +37,16 @@ class BaseAPIException(Exception):
 class BadRequestAPIException(BaseAPIException):
     http_status = HTTPStatus.BAD_REQUEST
     message = "The request is invalid or missing required data."
+
+
+class ResourceNotAvailableAPIException(BaseAPIException):
+    http_status = HTTPStatus.NOT_FOUND
+    message = "Resouce not available."
+
+
+class NotFoundAPIException(BaseAPIException):
+    http_status = HTTPStatus.NOT_FOUND
+
+
+class InternalServerErrorAPIException(BaseAPIException):
+    http_status = HTTPStatus.INTERNAL_SERVER_ERROR

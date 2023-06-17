@@ -1,3 +1,4 @@
+import os
 import shutil
 import threading
 from pathlib import Path
@@ -131,7 +132,24 @@ def remove_tmp_dir_and_files(directory: Path | str) -> None:
     Returns:
         None
     """
-    shutil.rmtree(directory)
+    shutil.rmtree(directory, ignore_errors=True)
+
+
+def delete_files(*files: Path | str) -> None:
+    """
+    Delete files.
+
+    Args:
+        files (Path | str): files to be removed.
+
+    Returns:
+        None
+    """
+    for file in files:
+        try:
+            os.remove(file)
+        except FileNotFoundError:
+            continue
 
 
 def enforce_directory_creation(*directories: Path) -> None:
