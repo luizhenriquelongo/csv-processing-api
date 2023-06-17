@@ -34,7 +34,7 @@ class CreateTaskService:
 
         csv_file.save(input_file_path)
 
-        # process_csv.delayed(task_id, str(self.upload_folder), str(self.download_folder))
+        process_csv.delay(task_id, str(self.upload_folder), str(self.download_folder))
 
         task = self.dao.create_new_task(task_id=task_id, input_file_path=str(input_file_path))
         response = responses.TaskCreatedResponse(

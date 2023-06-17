@@ -29,8 +29,9 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", uuid.uuid4().hex)
 
     CELERY = {
-        "CELERY_BROKER_URL": os.getenv("CELERY_BROKER_URL"),
-        "RESULT_BACKEND": os.getenv("RESULT_BACKEND"),
+        "broker_url": os.getenv("CELERY_BROKER_URL"),
+        "result_backend": os.getenv("RESULT_BACKEND"),
+        "task_ignore_result": True,
     }
 
     MONGO_URI = os.getenv("MONGO_URI")

@@ -28,5 +28,10 @@ def create_task():
     dao = DummyDAO(
         input_dir=current_app.config["UPLOAD_FOLDER"]
     )  # TODO: Change this class to an actual DAO implementation
-    service = CreateTaskService(request=request, dao=dao, upload_folder=current_app.config["UPLOAD_FOLDER"])
+    service = CreateTaskService(
+        request=request,
+        dao=dao,
+        upload_folder=current_app.config["UPLOAD_FOLDER"],
+        download_folder=current_app.config["DOWNLOAD_FOLDER"],
+    )
     return service.create_task()
