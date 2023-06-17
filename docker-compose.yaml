@@ -1,0 +1,43 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672  # RabbitMQ port
+      - 15672:15672  # RabbitMQ management port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Persist RabbitMQ data
+
+  flask:
+    build:
+      context: .
+    environment:
+      FLASK_APP: application
+    volumes:
+      - .:/app
+    command: poetry run gunicorn -w 4 -b 0.0.0.0:5002 application:app --log-level DEBUG
+    ports:
+      - "5002:5002"
+
+  celery:
+    build:
+      context: .
+    environment:
+      FLASK_APP: application
+    volumes:
+      - .:/app
+    command: poetry run celery -A make_celery worker --loglevel INFO
+    depends_on:
+      - rabbitmq
+
+  mongodb:
+    image: mongo:latest
+    env_file: .env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb:/data/db
+
+volumes:
+  rabbitmq_data:  # Volume for RabbitMQ data
+  mongodb:  # Volume for MongoDB
