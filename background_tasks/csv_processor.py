@@ -44,17 +44,15 @@ class CSVProcessor:
         task_id: str,
         dao: TaskDAO,
         *,
-        base_dir: Path | str,
-        output_dir: str,
+        output_dir: Path | str,
         chunk_size: int | None = 2_000_000,
     ):
         self.dao = dao
         self.task = self.dao.get_task(task_id)
-        self.base_dir = base_dir if isinstance(base_dir, Path) else Path(base_dir).resolve()
-        self.output_dir = output_dir
+        self.output_dir = output_dir if isinstance(output_dir, Path) else Path(output_dir).resolve()
         self.chunk_size = chunk_size
         self.__lock = threading.Lock()
-        self.__tmp_dir = self.base_dir / self.output_dir / f"{self.task.id}"
+        self.__tmp_dir = self.output_dir / f"{self.task.id}"
         helpers.enforce_directory_creation(self.__tmp_dir)
 
     def execute(self):
@@ -149,9 +147,7 @@ class CSVProcessor:
             for file in glob.glob(f"{self.__tmp_dir}/*.csv")
         ]
 
-        output_file = helpers.make_output_file_path(
-            base_dir=self.base_dir, output_dir=self.output_dir, file_name=self.task.id
-        )
+        output_file = helpers.make_output_file_path(output_dir=self.output_dir, file_name=self.task.id)
         with open(output_file, "a") as f:
             # Write the output csv headers
             f.write("Song,Date,Total Number of Plays for Date\n")
@@ -234,7 +230,7 @@ class CSVProcessor:
                 logger.debug(traceback.format_exc())
                 errors = {"error": "Something went wrong while processing the csv file."}
 
-            self.update_task(status=TaskStatus.ERROR, errors=errors)
+            self.update_task(status=TaskStatus.FAILED, errors=errors)
 
         helpers.remove_tmp_dir_and_files(self.__tmp_dir)
         return True

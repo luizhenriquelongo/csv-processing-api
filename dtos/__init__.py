@@ -1,1 +1,1 @@
-from .task_dto import Task, TaskStatus
+from .tasks import Task, TaskStatus

@@ -5,11 +5,12 @@ from pydantic import BaseModel
 from dtos.types import ErrorsDict
 
 
-class TaskStatus(Enum):
+class TaskStatus(str, Enum):
     QUEUED = "QUEUED"
     IN_PROGRESS = "IN_PROGRESS"
-    ERROR = "ERROR"
+    FAILED = "FAILED"
     COMPLETED = "COMPLETED"
+    DOWNLOADED = "DOWNLOADED"
 
 
 class Task(BaseModel):

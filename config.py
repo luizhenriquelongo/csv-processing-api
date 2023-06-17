@@ -6,12 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Find the absolute file path to the top level project directory
-BASE_DIR = Path(__file__).resolve().parent
 
-
-def get_sqlite_dabase_uri(db_name: str):
-    return f"sqlite:///{BASE_DIR / db_name}.db"
+def get_sqlite_dabase_uri(base_dir: Path, db_name: str):
+    return f"sqlite:///{base_dir / db_name}.db"
 
 
 class Config:
@@ -24,6 +21,11 @@ class Config:
     DEBUG = False
     TESTING = False
 
+    # Find the absolute file path to the top level project directory
+    BASE_DIR = Path(__file__).resolve().parent
+    CSV_OUTPUT_DIR = os.getenv("CSV_OUTPUT_DIR", "static/output")
+    CSV_INPUT_DIR = os.getenv("CSV_INPUT_DIR", "static/input")
+
     SECRET_KEY = os.getenv("SECRET_KEY", uuid.uuid4().hex)
 
     CELERY = {
@@ -31,17 +33,19 @@ class Config:
         "RESULT_BACKEND": os.getenv("RESULT_BACKEND"),
     }
 
+    MONGO_URI = os.getenv("MONGO_URI")
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri("dev")
+    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri(Config.BASE_DIR, "dev")
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri("test")
+    SQLALCHEMY_DATABASE_URI = get_sqlite_dabase_uri(Config.BASE_DIR, "test")
 
 
 class ProductionConfig(Config):
     FLASK_ENV = "production"
-    SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI", get_sqlite_dabase_uri("prod"))
+    SQLALCHEMY_DATABASE_URI = os.getenv("PROD_DATABASE_URI", get_sqlite_dabase_uri(Config.BASE_DIR, "prod"))

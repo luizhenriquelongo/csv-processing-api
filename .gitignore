@@ -1,6 +1,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/flask,macos,python,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,macos,python,pycharm
 
+# Ignoring files created while processing files
+static/input/*
+static/output/*
+
 ### Flask ###
 instance/*
 !instance/.gitignore

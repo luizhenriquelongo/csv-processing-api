@@ -94,16 +94,13 @@ def save_dataframe_to_group_file(
     seen_groups.add(group)
 
 
-def make_output_file_path(
-    base_dir: Path | str, output_dir: str, file_name: str, file_format: Literal["csv"] = "csv"
-) -> Path:
+def make_output_file_path(output_dir: Path | str, file_name: str, file_format: Literal["csv"] = "csv") -> Path:
     """
     Create the full path to the output file based on the provided base directory, output directory, file name,
     and file format.
 
     Args:
-        base_dir (Path | str): The base directory for the output file. It can be a Path object or a string.
-        output_dir (str): The directory where the output file will be saved.
+        output_dir (Path | str): The base directory for the output file. It can be a Path object or a string.
         file_name (str): The name of the output file.
         file_format (Literal["csv"], optional): The file format. Defaults to "csv".
 
@@ -115,14 +112,13 @@ def make_output_file_path(
         >>> print(file_path)
         'usr/app/static/outputs/some_file.csv'
     """
-    if not isinstance(base_dir, Path):
-        base_dir = Path(base_dir).resolve()
+    if not isinstance(output_dir, Path):
+        output_dir = Path(output_dir).resolve()
 
-    base_file_path = base_dir / output_dir
     # Make sure to create the whole directory path if the does not exist
-    base_file_path.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    return base_file_path / f"{file_name}.{file_format}"
+    return output_dir / f"{file_name}.{file_format}"
 
 
 def remove_tmp_dir_and_files(directory: Path | str) -> None:
@@ -138,14 +134,15 @@ def remove_tmp_dir_and_files(directory: Path | str) -> None:
     shutil.rmtree(directory)
 
 
-def enforce_directory_creation(directory: Path) -> None:
+def enforce_directory_creation(*directories: Path) -> None:
     """
     Create the specified directory if it does not already exist.
 
     Args:
-        directory (Path): The directory to be created.
+        directories (Path): The directories to be created.
 
     Returns:
         None
     """
-    directory.mkdir(parents=True, exist_ok=True)
+    for directory in directories:
+        directory.mkdir(parents=True, exist_ok=True)
