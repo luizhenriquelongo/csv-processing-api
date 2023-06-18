@@ -144,4 +144,5 @@ So with this you can create larger `.csv` files to load test the application.
 
 - Testing, testing, testing: I have wroted just a small amount of tests due to time constraints.
 - Improve API documentation.
-- Improve components configuration (e.g. mongo, rabbitmq, celery)
+- Improve components configuration (e.g. mongo, rabbitmq, celery).
+- Improve logging.
