@@ -49,6 +49,9 @@ so they are not strictly a for loop which processes one item at a time.
 ### Requirements
 - [Docker](https://docs.docker.com/get-docker/)
 - [docker-compose](https://docs.docker.com/compose/install/)
+- `.env`: The application relly on a few environment variables (you could find in `.env.example`).
+Make a copy of this file making sure that the file name is `.env` and change it as needed. _It will
+work if you use the values in the `.env.example` file but is not recomended._
 
 ### Command
 Go to the project folder directory and run:
