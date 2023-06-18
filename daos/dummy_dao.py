@@ -40,9 +40,7 @@ class DummyDAO:
 
     def get_task(self, task_id: str) -> dtos.Task:
         logger.debug("Getting fake task...")
-        task = dtos.Task(
-            id=task_id, input_file_path=f"{self.input_dir}/{str(uuid.uuid4())}.csv", status=dtos.TaskStatus.IN_PROGRESS
-        )
+        task = dtos.Task(id=task_id, input_file_path=f"{self.input_dir}/{str(uuid.uuid4())}.csv")
         logger.debug(f"Task info: {task.dict()}")
         return task
 

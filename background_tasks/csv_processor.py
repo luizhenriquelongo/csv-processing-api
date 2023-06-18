@@ -8,7 +8,7 @@ import pandas as pd
 import polars as pl
 
 import helpers
-from background_tasks import exceptions
+from background_tasks.exceptions import ProcessingError
 from dtos import Task, TaskStatus
 from dtos.types import ErrorsDict
 from logger import get_logger
@@ -69,16 +69,11 @@ class CSVProcessor:
         if self.task.input_file_path is None:
             errors["input_file"] = ["Cannot process a csv without the input file."]
 
-        if not self.task.input_file_path.endswith(".csv"):
-            error_msg = "File format not supported"
-            if errors.get("input_file"):
-                errors["input_file"].append(error_msg)
-
-            else:
-                errors["input_file"] = [error_msg]
+        elif not self.task.input_file_path.endswith(".csv"):
+            errors["input_file"] = ["File format not supported."]
 
         if errors:
-            raise exceptions.ProcessingError(errors=errors)
+            raise ProcessingError(errors=errors)
 
     def process_task(self) -> Path:
         """
@@ -222,7 +217,7 @@ class CSVProcessor:
 
     def __exit__(self, exc, exc_val, exc_tb):
         if exc is not None:
-            if isinstance(exc, exceptions.ProcessingError):
+            if isinstance(exc, ProcessingError):
                 errors = exc.errors
 
             else:

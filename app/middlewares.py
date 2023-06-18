@@ -7,9 +7,9 @@ def handle_api_exceptions(exception: exceptions.BaseAPIException) -> Tuple[Dict,
     return exception.to_flask_response()
 
 
-def handle_bare_excpetions(exception: Exception):
+def handle_bare_excpetions(_):
     raise exceptions.InternalServerErrorAPIException(details=["Something went wrong."])
 
 
-def handle_404(error):
+def handle_404(_):
     raise exceptions.NotFoundAPIException(details=["Resource not found."])

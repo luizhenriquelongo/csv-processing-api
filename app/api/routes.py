@@ -1,9 +1,9 @@
 from flask import Blueprint, current_app, request
 from flask_pydantic_spec import MultipartFormRequest, Response
 
+import dtos
 import services
 from daos import TasksMongoDAO
-from dtos import responses
 
 from app.extensions import db, spec
 
@@ -13,7 +13,7 @@ tasks_bp = Blueprint("tasks_bp", __name__, url_prefix="/api/v1/file-processing/t
 @tasks_bp.route("/", methods=["POST"])
 @spec.validate(
     body=MultipartFormRequest(),
-    resp=Response(HTTP_202=responses.TaskAPIResponse, HTTP_400=responses.ErrorResponse),
+    resp=Response(HTTP_202=dtos.TaskAPIResponse, HTTP_400=dtos.ErrorResponse),
     tags=["Tasks"],
 )
 def create_task():
@@ -36,7 +36,7 @@ def create_task():
 
 
 @tasks_bp.route("/<task_id>/status", methods=["GET"])
-@spec.validate(resp=Response(HTTP_200=responses.TaskAPIResponse, HTTP_400=responses.ErrorResponse), tags=["Tasks"])
+@spec.validate(resp=Response(HTTP_200=dtos.TaskAPIResponse, HTTP_400=dtos.ErrorResponse), tags=["Tasks"])
 def check_task_status(task_id: str):
     """
     Check the status of a task.
@@ -53,7 +53,7 @@ def check_task_status(task_id: str):
 
 
 @tasks_bp.route("/<task_id>/download", methods=["GET"])
-@spec.validate(resp=Response(HTTP_206=responses.TaskAPIResponse), tags=["Tasks"])
+@spec.validate(resp=Response(HTTP_206=dtos.TaskAPIResponse), tags=["Tasks"])
 def download_task_results(task_id: str):
     """
     Download the csv result of a completed task.

@@ -21,6 +21,8 @@ flask-pymongo = "^2.3.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^23.3.0"}
+pytest = "^7.3.2"
+pytest-mock = "^3.11.1"
 
 [build-system]
 requires = ["poetry-core"]
