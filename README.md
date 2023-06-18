@@ -60,7 +60,8 @@ docker-compose up --build
 ```
 
 ## Usage
-After all containers are up and running, you can access the endpoints documentation in the following url:
+You can try the whole API workflow within the swagger UI of the API docs.
+After all containers are up and running, you can access the API docs in the following url:
 > http://127.0.0.1:5002/api/v1/docs/swagger
 
 
