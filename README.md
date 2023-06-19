@@ -1,7 +1,5 @@
 # CSV Processing API
-
-This api receives a CSV file of the following format as its input,
-processes it and generates the output CSV file. The goal here is to generate the output file with the `Total Number of Plays for Date` for each song and date combination.
+This API processes CSV files to generate an output CSV file that contains the Total Number of Plays for Date for each song and date combination.
 
 # Contents
 
@@ -25,18 +23,18 @@ processes it and generates the output CSV file. The goal here is to generate the
 
 ## Architecture Overview
 
-The goal of this architecture is to be able to process csv files asynchronously noticing that the uploaded and the result files
-may be larger than the available memory in the server.
+The architecture of this API is designed to handle large CSV files and perform asynchronous processing,
+considering that the uploaded and result files may exceed the server's available memory.
 
 _**Important:** Did not spend much time on configuration of componentes other than the flask application and the celery worker, all other components are just a "plug and play" docker-compose version with basic to none security at all. This is not intended to be production ready (despite the python code) environment._
 
 ### Components
-- **Flask API**: The actual web server.
-- **Local Storage**: The storage inside the web server.
-- **MongoDB**: The database that holds all the information about all tasks created so far.
-- **RabbitMQ**: The message broker used to enable the async comunication between celery and flask.
-- **Celery Worker**: The worker that will process the files asynchronously.
-- **Celery Beat**: Will schedule a task for every 30 seconds to clean up the files in the local storage.
+- **Flask API**: The web server for the API.
+- **Local Storage**: Storage within the web server.
+- **MongoDB**: Database for storing information about tasks.
+- **RabbitMQ**: Message broker enabling async communication between Celery and Flask.
+- **Celery Worker**: Processes files asynchronously.
+- **Celery Beat**: Schedules a task every 30 seconds to clean up files in local storage.
 
 ### Sequence Diagram of the relevant endpoint
 ![sequence_diagram.png](docs/sequence_diagram.png)
@@ -49,19 +47,21 @@ so they are not strictly a for loop which processes one item at a time.
 ### Requirements
 - [Docker](https://docs.docker.com/get-docker/)
 - [docker-compose](https://docs.docker.com/compose/install/)
-- `.env`: The application relly on a few environment variables (you could find in `.env.example`).
-Make a copy of this file making sure that the file name is `.env` and change it as needed. _It will
+- `.env`: The application relies on environment variables (refer to `.env.example` for reference).
+Create a copy named `.env` and modify the values as needed. _It will
 work if you use the values in the `.env.example` file but is not recomended._
 
-### Command
-Go to the project folder directory and run:
+### Run
+1. Navigate to the project folder directory.
+2. Execute the command:
 ```bash
 docker-compose up --build
 ```
 
 ## Usage
-You can try the whole API workflow within the swagger UI of the API docs.
-After all containers are up and running, you can access the API docs in the following url:
+_You can try the whole API workflow within the swagger UI._
+
+The API documentation, including the Swagger UI, can be accessed at:
 > http://127.0.0.1:5002/api/v1/docs/swagger
 
 
@@ -133,16 +133,33 @@ For even worst cases, I think solution like `dask` or `spark` would be better du
 We are not talking here about processing thousands of huge files in only one computer,
 that would be insane.
 
+### Time complexity (big O notation)
+Regarding time complexity, it is realy hard to estimate it when you are using some external library
+(did not have the time to go thorugh the entire codebase of each library used here). So just for sake of
+rught estimation we can make some guesses:
+1. If we assume that the number of unique songs (K) is much smaller than the number of rows in the
+CSV file (N), and the average size of each partition (P) and the average size of the result data (R)
+are not significantly large, we can drop those terms. This assumption is based on the observation
+that typically the number of unique songs is much smaller compared to the total number of rows in a large dataset.
+
+2. Since we are working with chunks of the CSV file, the size of each chunk (M) can be considered a
+constant or a small factor compared to the overall size of the file. Therefore, we can also drop this term.
+
+3. We are left with O(N + K) as the dominant terms.
+
+Just for clarity, the time complexity will relly on the total number of rows and the total
+number of unique songs, so the time to process a file will be impacted the most by these two variables.
+
 
 ## Tests
-The main application container and the celery worker are set to work with only 1Gb of RAM, so you can try it with files larger than this to check if everything is running fine.
-
-Inside the `tests/` folder you will find a `script.py` file, use this module to create large csv files to be processed by the application. The output file will live in `/tests/static/`.
-So with this you can create larger `.csv` files to load test the application.
+The main application container and the Celery worker are configured with 1GB of RAM. You can use
+the `script.py` provided in the `tests/` folder to create large CSV files for testing.
+The output file will be saved in `/tests/static/`. Feel free to test the application with files
+larger than 1GB to ensure smooth operation.
 
 ## TODOs
 
-- Testing, testing, testing: I have wroted just a small amount of tests due to time constraints.
+- Expand test coverage: I have wroted just a small amount of tests due to time constraints.
 - Improve API documentation.
-- Improve components configuration (e.g. mongo, rabbitmq, celery).
-- Improve logging.
+- Enhance components configuration (e.g. mongo, rabbitmq, celery).
+- Enhance logging capabilities.
